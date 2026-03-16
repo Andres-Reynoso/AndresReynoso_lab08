@@ -24,14 +24,23 @@ public class E02AVLTree<T> {
 
     public T search(T value) {
         Node<T> current = root;
+
         while (current != null) {
+
             int cmp = comparator.compare(value, current.value);
-            if (cmp == 0) return current.value;
-            if (cmp < 0) current = current.left;
-            else current = current.right;
+
+            if (cmp == 0)
+                return current.value;
+
+            if (cmp < 0)
+                current = current.left;
+            else
+                current = current.right;
         }
+
         return null;
     }
+
     public int height() {
         return height(root);
     }
@@ -41,75 +50,103 @@ public class E02AVLTree<T> {
     }
 
     private Node<T> insert(Node<T> node, T value) {
+
         if (node == null) {
             size++;
             return new Node<>(value);
         }
 
         int cmp = comparator.compare(value, node.value);
-        if (cmp < 0) {
+
+        if (cmp < 0)
             node.left = insert(node.left, value);
-        } else if (cmp > 0) {
+
+        else if (cmp > 0)
             node.right = insert(node.right, value);
-        } else {
+
+        else
             return node; // no duplicados
-        }
 
         updateHeight(node);
+
         return rebalance(node);
     }
 
     private Node<T> delete(Node<T> node, T value) {
-        if (node == null) return null;
+
+        if (node == null)
+            return null;
 
         int cmp = comparator.compare(value, node.value);
+
         if (cmp < 0) {
             node.left = delete(node.left, value);
-        } else if (cmp > 0) {
+        }
+        else if (cmp > 0) {
             node.right = delete(node.right, value);
-        } else {
+        }
+        else {
+
             // nodo encontrado
+
             if (node.left == null || node.right == null) {
+
                 Node<T> temp = (node.left != null) ? node.left : node.right;
+
                 if (temp == null) {
                     node = null;
-                } else {
+                }
+                else {
                     node = temp;
                 }
+
                 size--;
-            } else {
+            }
+            else {
+
                 Node<T> successor = minNode(node.right);
+
                 node.value = successor.value;
+
                 node.right = delete(node.right, successor.value);
             }
         }
 
-        if (node == null) return null;
+        if (node == null)
+            return null;
 
         updateHeight(node);
+
         return rebalance(node);
     }
 
     private Node<T> minNode(Node<T> node) {
+
         Node<T> current = node;
-        while (current.left != null) current = current.left;
+
+        while (current.left != null)
+            current = current.left;
+
         return current;
     }
 
     private Node<T> rebalance(Node<T> node) {
+
         int balance = balanceFactor(node);
 
         if (balance > 1) {
-            if (balanceFactor(node.left) < 0) {
+
+            if (balanceFactor(node.left) < 0)
                 node.left = rotateLeft(node.left);
-            }
+
             return rotateRight(node);
         }
 
         if (balance < -1) {
-            if (balanceFactor(node.right) > 0) {
+
+            if (balanceFactor(node.right) > 0)
                 node.right = rotateRight(node.right);
-            }
+
             return rotateLeft(node);
         }
 
@@ -117,17 +154,21 @@ public class E02AVLTree<T> {
     }
 
     private Node<T> rotateRight(Node<T> y) {
+
         Node<T> x = y.left;
         Node<T> t2 = x.right;
 
         x.right = y;
         y.left = t2;
+
         updateHeight(y);
         updateHeight(x);
+
         return x;
     }
 
     private Node<T> rotateLeft(Node<T> x) {
+
         Node<T> y = x.right;
         Node<T> t2 = y.left;
 
@@ -136,6 +177,7 @@ public class E02AVLTree<T> {
 
         updateHeight(x);
         updateHeight(y);
+
         return y;
     }
 
@@ -152,6 +194,7 @@ public class E02AVLTree<T> {
     }
 
     private static class Node<T> {
+
         T value;
         Node<T> left;
         Node<T> right;
